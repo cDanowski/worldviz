@@ -54,19 +54,19 @@ public class KeyValuePair implements Comparable<KeyValuePair> {
 		this.value = value;
 	}
 
-	protected String getKey() {
+	public String getKey() {
 		return key;
 	}
 
-	protected void setKey(String key) {
+	public void setKey(String key) {
 		this.key = key;
 	}
-
-	protected String getValue() {
+	
+	public String getValue() {
 		return value;
 	}
 
-	protected void setValue(String value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
 
