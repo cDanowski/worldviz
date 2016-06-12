@@ -232,6 +232,74 @@ public class CsvImporter implements Importer {
 		}
 
 	}
+	
+	/**
+	 * method not intended for real usage! needed for special use case.
+	 * @throws FileNotFoundException
+	 */
+	protected void fillDatasetEntries2() throws FileNotFoundException {
+
+		if (logger.isInfoEnabled()) {
+			logger.info(
+					"The 'Entries'-Tag-part of the XML-document at {} will be overridden by the contents of the CSV-file at {}",
+					this.xmlFileLocation, this.csvFileLocation);
+		}
+
+		// the files should already exist
+		FileHelper.filesExist(new File(this.csvFileLocation), new File(
+				this.xmlFileLocation));
+
+		// prepare xmlFile and CsvReader
+		File datasetFile = new File(this.xmlFileLocation);
+		DatasetDocument dataset = null;
+		CsvReader csvReader = null;
+		try {
+
+			csvReader = new CsvReader(this.csvFileLocation, this.csvSeperator);
+
+			// skip initial lines, that contain metadata
+			for (int i = 0; i < this.numberOfInitLinesToSkip; i++) {
+				// note: the method csvReader.skipLine() may not work on any
+				// csv-file; thus the method readRecord() is used
+				csvReader.readRecord();
+			}
+
+			// read the headers of each column of the csv file
+			csvReader.readHeaders();
+
+			// create Map from all single entries of the csv-file
+			Map<String, DatasetEntry> datasetEntries = readEntries(csvReader);
+			
+			datasetEntries = WorldSharesComputer.computeWorldShares(datasetEntries);
+
+			// load existing xmlDocument
+			dataset = DatasetDocument.Factory.parse(datasetFile);
+
+			// create new list of Entries
+			createNewEntries(dataset, datasetEntries);
+
+			// save changes to datasetFile
+			dataset.save(datasetFile);
+
+			if (logger.isInfoEnabled()) {
+				logger.info(
+						"Successfully overridden the 'Entries'-Tag-part of the XML-document at {}.",
+						this.xmlFileLocation);
+			}
+
+		} catch (XmlException e) {
+			if (logger.isErrorEnabled())
+				logger.error("An error (XmlException) occured on file {}.",
+						this.xmlFileLocation, e);
+		} catch (IOException e) {
+			if (logger.isErrorEnabled())
+				logger.error("An error (IOException) occured.", e);
+		} finally {
+			if (csvReader != null)
+				csvReader.close();
+		}
+
+	}
 
 	/**
 	 * Reads the whole csv-file and extracts each single Entry(= each data line)
