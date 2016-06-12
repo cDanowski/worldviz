@@ -120,6 +120,29 @@ public class DatasetEntry {
 		}
 		return attributes;
 	}
+	
+	/**
+	 * Returns only the attributes of each attributeValuePair
+	 * @return
+	 */
+	public String getValue(String attributeName){
+		for (KeyValuePair keyValuePair : attributeValuePairs) {
+			if (keyValuePair.getKey().equals(attributeName))
+				return keyValuePair.getValue();
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns only the attributes of each attributeValuePair
+	 * @return
+	 */
+	public void setValue(String attributeName, String attributeValue){
+		for (KeyValuePair keyValuePair : attributeValuePairs) {
+			if (keyValuePair.getKey().equals(attributeName))
+				keyValuePair.setValue(attributeValue);
+		}
+	}
 
 	@Override
 	public String toString() {
