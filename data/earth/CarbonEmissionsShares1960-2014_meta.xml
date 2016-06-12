@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="xsl/Dataformat.xsl"?>
+<!--
+This example shows how to hold additional meta-information that is not part of an actual data file to be processed 
+in the context of the BO's ENE project. 
+Primarly, meta-data which document the underlying data-source should be given
+ in such DatasetDescriptions.
+Authors: Benno Schmidt, Christian Danowski, Department of Geodesy, Bochum University of Applied Sciences.
+-->
+<DatasetDescription version="0.1" xsi:noNamespaceSchemaLocation="xsd/DatasetDescription.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<SpatialScaleHint>World-wide</SpatialScaleHint><!-- 
+	For the GI-project "Gespraech mit der Erde", this scale hint always will be "World-wide". In the future, regional data will
+	be processed, so that other values might appear. 
+	-->
+	<CovereredTime>
+	<!-- 
+	Zeitraum, fuer welchen die Kohlenstoff Emmisionen als Daten vorliegen
+	-->
+		<TimePeriod>
+			<begin>1960-01-01+01:00</begin>
+ <!-- Startzeitraum 
+-->	
+			<end>2014-12-31+01:00</end>
+ <!-- Endzeitraum  
+-->
+		</TimePeriod>
+	</CovereredTime>
+	<DatasetReference>CarbonEmissionsShares1960-2014.xml</DatasetReference>
+ <!-- Dateiname der xml Datenquelle 
+-->
+	<SourceFileReference format="CSV">sourceFiles/CO2_Emissions_1960-2014.csv</SourceFileReference>
+ <!-- Dateiformat der Quelledatei: Hier Daten stammen aus einer csv Datei 
+-->
+	<Source>
+  <!-- Quelle 
+-->
+		<ContactPersons/>
+ <!-- Falls Kontaktpersonen, fuer die Quelldatei, vorhanden sind 
+-->
+		<URI accessDate="2016-04-12 +11:00">http://www.globalcarbonatlas.org/?q=en/emissions</URI>
+  <!-- Datum, andem die Daten abgerufen wurden, mit Link zur Quelle  
+-->
+		<AlternativeURIs><!-- Here additional URLs can be documented. -->
+			<URI/>
+		</AlternativeURIs>
+		<Notes/>
+ <!-- Zusaetzliche Informationen zu den Daten 
+-->
+	</Source>
+	<CopyrightInformation>Global Carbon Atlas</CopyrightInformation>
+  <!-- Anzugebene Copyright Informationen 
+-->
+	<ImportProcess>
+		<Description language="DE">
+ <!-- Hier werden die noetigen Schritte beschrieben die noetig waren, um aus der Qulldatei die noetigen Informationen zu extrahieren 
+-->
+	   		Shares are computed from the source file.
+			
+		</Description>
+		<QualityCheck date="2016-04-13 +11:00" responsiblePerson="Christian Danowski">
+	   	</QualityCheck>
+	</ImportProcess>
+</DatasetDescription>
