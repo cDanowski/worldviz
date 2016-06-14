@@ -2,10 +2,9 @@ package org.n52.v3d.worldviz.helper;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.n52.v3d.triturus.vgis.VgAttrFeature;
 import org.n52.v3d.worldviz.dataaccess.importtools.KeyValuePair;
@@ -18,8 +17,6 @@ import org.n52.v3d.worldviz.dataaccess.importtools.KeyValuePair;
  */
 public class CO2ppmPerCountryGenerator {
 
-	private static final String COUNTRY_CODE_ATTRIBUTE_NAME = "Country Code";
-
 	/**
 	 * Generates a map of features, representing the share of ppmConcentration
 	 * in the atmosphere!
@@ -28,9 +25,9 @@ public class CO2ppmPerCountryGenerator {
 	 * @param countries_shares
 	 * @return
 	 */
-	public static Map<String, VgAttrFeature> generatePpmPerCountry(List<KeyValuePair> co2_ppm_world_pairs,
+	public static List<VgAttrFeature> generatePpmPerCountry(List<KeyValuePair> co2_ppm_world_pairs,
 			List<VgAttrFeature> countries_shares) {
-		Map<String, VgAttrFeature> ppmSharesPerCountry = new HashMap<String, VgAttrFeature>(countries_shares.size());
+		List<VgAttrFeature> ppmSharesPerCountry = new ArrayList<VgAttrFeature>(countries_shares.size());
 		
 		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.GERMAN);
 		formatSymbols.setDecimalSeparator('.');
@@ -65,13 +62,8 @@ public class CO2ppmPerCountryGenerator {
 					//TODO auto-generated catch block
 				}
 			}
-			/*
-			 * iso 3166-2 count5ry code to identify the country!
-			 */
-			String iso3166CountryCode = (String)country.getAttributeValue(COUNTRY_CODE_ATTRIBUTE_NAME);
-			
-			//TODO change to (ppm-valuePerYXear)
-			ppmSharesPerCountry.put(iso3166CountryCode, country);
+
+			ppmSharesPerCountry.add(country);
 		}
 		
 		return ppmSharesPerCountry;
