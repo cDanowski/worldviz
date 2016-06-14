@@ -70,6 +70,7 @@ public class CO2ppmPerCountryGenerator {
 			 */
 			String iso3166CountryCode = (String)country.getAttributeValue(COUNTRY_CODE_ATTRIBUTE_NAME);
 			
+			//TODO change to (ppm-valuePerYXear)
 			ppmSharesPerCountry.put(iso3166CountryCode, country);
 		}
 		
