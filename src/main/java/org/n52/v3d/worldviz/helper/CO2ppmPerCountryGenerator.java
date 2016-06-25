@@ -51,7 +51,7 @@ public class CO2ppmPerCountryGenerator {
 				/*
 				 * multiply total ppm value with the co2 emission share of the country.
 				 */
-				double co2_ppm_country_share = co2_ppm_total * country_co2_emission_share;
+				double co2_ppm_country_share = co2_ppm_total * country_co2_emission_share / co2_ppm_total;
 				
 				/*
 				 * set new co2 ppm share at VgAttrFeature and add it to result map
