@@ -54,7 +54,9 @@ public class MpValue2ExtrudedAttrFeature extends T3dProcMapper {
 
 	private MpValue2NumericExtent numericExtentMapper;
 
-	private double neutralExtrusionHeight = 0.0;
+	protected double neutralExtrusionHeight = 0.0;
+
+	protected String attrName;
 
 	/**
 	 * Constructor. Note that you should also call
@@ -125,7 +127,7 @@ public class MpValue2ExtrudedAttrFeature extends T3dProcMapper {
 	 * @return the feature-instance that holds the extrusion height for the
 	 *         feature in a new attribute (see information above)
 	 */
-	public VgAttrFeature transform(double value, VgAttrFeature feature) {
+	private VgAttrFeature transform(double value, VgAttrFeature feature) {
 		double extrusionHeight = this.numericExtentMapper.transform(value);
 		
 		if (logger.isDebugEnabled())
@@ -151,7 +153,7 @@ public class MpValue2ExtrudedAttrFeature extends T3dProcMapper {
 	 * @param feature
 	 * @param extrusionHeight
 	 */
-	private void addExtrusionAttribute(VgAttrFeature feature,
+	protected void addExtrusionAttribute(VgAttrFeature feature,
 			double extrusionHeight) {
 		feature.addAttribute(NamesForAttributes.attributeNameForExtrusion,
 				Double.class.toString());
@@ -184,6 +186,8 @@ public class MpValue2ExtrudedAttrFeature extends T3dProcMapper {
 	 */
 	public VgAttrFeature transform(String attrName, VgAttrFeature feature) {
 
+		this.attrName = attrName;
+		
 		// check if that object is either a double or a String value!
 		Object attributeValue = feature.getAttributeValue(attrName);
 		double doubleValue = 0;
