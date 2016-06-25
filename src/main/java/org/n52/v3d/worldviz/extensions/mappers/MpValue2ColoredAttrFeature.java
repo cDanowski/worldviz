@@ -55,8 +55,9 @@ import org.slf4j.LoggerFactory;
 public class MpValue2ColoredAttrFeature extends MpValue2Symbol {
 
 	private MpSimpleHypsometricColor colorMapper;
-	private T3dColor neutralColor = new T3dColor(0.4f, 0.4f, 0.4f);
+	protected T3dColor neutralColor = new T3dColor(0.4f, 0.4f, 0.4f);
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	protected String attrName;
 
 	/**
 	 * Constructor. Note that you should also call
@@ -126,7 +127,7 @@ public class MpValue2ColoredAttrFeature extends MpValue2Symbol {
 	 * @return the feature-instance that holds the interpolated color for the
 	 *         feature in a new attribute (see information above)
 	 */
-	public VgAttrFeature transform(double value, VgAttrFeature feature) {
+	private VgAttrFeature transform(double value, VgAttrFeature feature) {
 
 		T3dColor interpolatedColor = this.colorMapper.transform(value);
 
@@ -151,7 +152,7 @@ public class MpValue2ColoredAttrFeature extends MpValue2Symbol {
 	 * @param feature
 	 * @param interpolatedColor
 	 */
-	private void addColorAttribute(VgAttrFeature feature,
+	protected void addColorAttribute(VgAttrFeature feature,
 			T3dColor interpolatedColor) {
 		feature.addAttribute(NamesForAttributes.attributeNameForColor,
 				T3dColor.class.toString());
@@ -182,6 +183,8 @@ public class MpValue2ColoredAttrFeature extends MpValue2Symbol {
 	 */
 	public VgAttrFeature transform(String attrName, VgAttrFeature feature) {
 
+		this.attrName = attrName;
+		
 		// check if that object is either a double or a String value!
 		Object attributeValue = feature.getAttributeValue(attrName);
 		double doubleValue = 0;
