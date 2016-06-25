@@ -193,7 +193,7 @@ public class FindExtrudeAndColorMissingCountriesHelper {
 
 	}
 
-	private List<VgAttrFeature> extrudeAndColorRemainingCountries(
+	protected List<VgAttrFeature> extrudeAndColorRemainingCountries(
 			Map<String, VgAttrFeature> remainingCountriesMap,
 			T3dColor neutralColor, double neutralExtrusionHeight) {
 
@@ -228,7 +228,7 @@ public class FindExtrudeAndColorMissingCountriesHelper {
 
 	}
 
-	private List<VgAttrFeature> extrudeAndColorRemainingCountries(
+	protected List<VgAttrFeature> extrudeAndColorRemainingCountries(
 			Map<String, VgAttrFeature> remainingCountriesMap) {
 
 		Set<Entry<String, VgAttrFeature>> remainingCountries = remainingCountriesMap
