@@ -28,8 +28,10 @@ import de.hsbo.fbg.worldviz.WvizConfigDocument.WvizConfig.GlobeVisualization.Wor
 
 public class MpWorldCountriesMapper extends MpAbstractXmlDatasetToGlobeVisualizer {
 
-	private MpValue2ColoredAttrFeature colorMapper;
-	private MpValue2ExtrudedAttrFeature extrusionMapper;
+	protected MpValue2ColoredAttrFeature colorMapper;
+	protected MpValue2ExtrudedAttrFeature extrusionMapper;
+	
+	protected VsWorldCountriesOnASphereScene worldCountriesScene;
 
 	public MpWorldCountriesMapper(WvizConfigDocument wVizConfigFile, String attributeNameForMapping) {
 		super(wVizConfigFile, attributeNameForMapping);
@@ -38,7 +40,7 @@ public class MpWorldCountriesMapper extends MpAbstractXmlDatasetToGlobeVisualize
 	@Override
 	public VsAbstractWorldScene transformToSingleScene(XmlDataset xmlDataset) {
 
-		VsWorldCountriesOnASphereScene worldCountriesScene = new VsWorldCountriesOnASphereScene();
+		this.worldCountriesScene = this.initializeScene();
 
 		this.parameterizeScene(worldCountriesScene, this.wVizConfigFile);
 
@@ -54,6 +56,11 @@ public class MpWorldCountriesMapper extends MpAbstractXmlDatasetToGlobeVisualize
 
 		return worldCountriesScene;
 
+	}
+
+	protected VsWorldCountriesOnASphereScene initializeScene() {
+		// TODO Auto-generated method stub
+		return new VsWorldCountriesOnASphereScene();
 	}
 
 	@Override
@@ -96,7 +103,7 @@ public class MpWorldCountriesMapper extends MpAbstractXmlDatasetToGlobeVisualize
 	}
 
 	private MpValue2ColoredAttrFeature initializeColorMapper(WvizConfigDocument wVizConfigFile) {
-		MpValue2ColoredAttrFeature colorMapper = new MpValue2ColoredAttrFeature();
+		MpValue2ColoredAttrFeature colorMapper = this.createColorMapperInstance();
 
 		ColorMapper colorMapperConfig = wVizConfigFile.getWvizConfig().getGlobeVisualization().getWorldCountries()
 				.getPolygonVisualizer().getColorMapper();
@@ -135,8 +142,12 @@ public class MpWorldCountriesMapper extends MpAbstractXmlDatasetToGlobeVisualize
 		return colorMapper;
 	}
 
+	protected MpValue2ColoredAttrFeature createColorMapperInstance() {
+		return new MpValue2ColoredAttrFeature();
+	}
+
 	private MpValue2ExtrudedAttrFeature initializeExtrusionMapper(WvizConfigDocument wVizConfigFile) {
-		MpValue2ExtrudedAttrFeature extrusionMapper = new MpValue2ExtrudedAttrFeature();
+		MpValue2ExtrudedAttrFeature extrusionMapper = this.createExtrusionMapperInstance();
 
 		ExtrusionMapper extrusionMapperConfig = wVizConfigFile.getWvizConfig().getGlobeVisualization()
 				.getWorldCountries().getPolygonVisualizer().getExtrusionMapper();
@@ -172,7 +183,11 @@ public class MpWorldCountriesMapper extends MpAbstractXmlDatasetToGlobeVisualize
 		return extrusionMapper;
 	}
 
-	private List<VgAttrFeature> transformGeoObjectsToSceneObjects(VsWorldCountriesOnASphereScene worldCountriesScene,
+	protected MpValue2ExtrudedAttrFeature createExtrusionMapperInstance() {
+		return new MpValue2ExtrudedAttrFeature();
+	}
+
+	protected List<VgAttrFeature> transformGeoObjectsToSceneObjects(VsWorldCountriesOnASphereScene worldCountriesScene,
 			List<VgAttrFeature> geoObjects) {
 
 		List<VgAttrFeature> coloredSceneObjects = this.colorMapper.transform(attributeNameForMapping, geoObjects);
@@ -186,7 +201,7 @@ public class MpWorldCountriesMapper extends MpAbstractXmlDatasetToGlobeVisualize
 
 	}
 
-	private List<VgAttrFeature> processMissingCountries(List<VgAttrFeature> extrudedColoredSceneObjects) {
+	protected List<VgAttrFeature> processMissingCountries(List<VgAttrFeature> extrudedColoredSceneObjects) {
 		FindExtrudeAndColorMissingCountriesHelper missingCountriesHelper = new FindExtrudeAndColorMissingCountriesHelper(
 				this.countryBorderLOD);
 
