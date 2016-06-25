@@ -1,0 +1,1 @@
+﻿scomp -compiler "‪C:\Program Files\Java\jdk1.8.0_91\bin\javac.exe" -out WvizConfig.jar WvizConfig.xsd WvizConfig.xsdconfig

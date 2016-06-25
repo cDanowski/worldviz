@@ -1,6 +1,3 @@
-<!--
-  This configuration file should be used to specify cartographic mapping parameters inside Triturus WorldViz.
--->
 <WvizConfig>
 	<!-- Here is an example for a 3-d connection net visualization: -->
 	<Background skyColor='1 1 1'/>
@@ -132,8 +129,19 @@
 		</Globe>
 		<!--Definition of world countries-->
 		<WorldCountries>
-			<!--declares how detailed each country's borders are defined. possible values are: DETAILED; SIMPLIFIED_50m; SIMPLIFIED_110m-->
+			
 			<PolygonVisualizer>
+				<!--definition of an animation, where visualization will result in an animation for multiple years!-->
+				<!-- type might be used in future to differentiate between different animation types. For now only "colorExtrusion" exists-->
+				<Animation enableAnimation="true" type="colorExtrusion">
+					<!-- definition of years for the animation. INFO: each value will be an attribute name holding the value of the thematic dataset-->
+					<!-- interval indicates the time interval: e.g. "1" indicates a yearly incrementation by one, whereas "5" indicates 5-year steps-->
+					<years interval="1">
+						<firstYear>1960</firstYear>
+						<lastYear>2014</lastYear>
+					</years>
+				</Animation>
+				<!--declares how detailed each country's borders are defined. possible values are: DETAILED; SIMPLIFIED_50m; SIMPLIFIED_110m-->
 				<LevelOfDetail lod="SIMPLIFIED_110m"/>
 				<CountryBorders drawborders="true">
 					<BorderColor type="RGB">0.0 0.0 0.0</BorderColor>
@@ -152,11 +160,11 @@
 							<OutputColor type="RGB">0 1 0</OutputColor>
 						</ColorEntry>
 						<ColorEntry>
-							<InputValue>2000000</InputValue>
+							<InputValue>0.5</InputValue>
 							<OutputColor type="RGB">1 1 0</OutputColor>
 						</ColorEntry>
 						<ColorEntry>
-							<InputValue>8000000</InputValue>
+							<InputValue>1</InputValue>
 							<OutputColor type="RGB">1 0 0</OutputColor>
 						</ColorEntry>
 					</ColorPalette>
@@ -169,7 +177,7 @@
 							<OutputExtrusion>1</OutputExtrusion>
 						</ExtrusionEntry>
 						<ExtrusionEntry>
-							<InputValue>8000000</InputValue>
+							<InputValue>1</InputValue>
 							<OutputExtrusion>5</OutputExtrusion>
 						</ExtrusionEntry>
 					</ExtrusionPalette>

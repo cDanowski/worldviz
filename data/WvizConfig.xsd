@@ -358,12 +358,35 @@
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="PolygonVisualizer">
-                      <xs:annotation>
-                        <xs:documentation>declares how detailed each country's borders are defined. possible values are: DETAILED; SIMPLIFIED_50m; SIMPLIFIED_110m</xs:documentation>
-                      </xs:annotation>
                       <xs:complexType>
                         <xs:sequence>
+                          <xs:element name="Animation">
+                            <xs:annotation>
+                              <xs:documentation>definition of an animation, where visualization will result in an animation for multiple years! type might be used in future to differentiate between different animation types. For now only "colorExtrusion" exists</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="years">
+                                  <xs:annotation>
+                                    <xs:documentation>definition of years for the animation. INFO: each value will be an attribute name holding the value of the thematic dataset interval indicates the time interval: e.g. "1" indicates a yearly incrementation by one, whereas "5" indicates 5-year steps</xs:documentation>
+                                  </xs:annotation>
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element type="xs:short" name="firstYear"/>
+                                      <xs:element type="xs:short" name="lastYear"/>
+                                    </xs:sequence>
+                                    <xs:attribute type="xs:byte" name="interval"/>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute type="xs:string" name="enableAnimation"/>
+                              <xs:attribute type="xs:string" name="type"/>
+                            </xs:complexType>
+                          </xs:element>
                           <xs:element name="LevelOfDetail">
+                            <xs:annotation>
+                              <xs:documentation>declares how detailed each country's borders are defined. possible values are: DETAILED; SIMPLIFIED_50m; SIMPLIFIED_110m</xs:documentation>
+                            </xs:annotation>
                             <xs:complexType>
                               <xs:simpleContent>
                                 <xs:extension base="xs:string">
@@ -479,7 +502,7 @@
                                         <xs:complexType>
                                           <xs:sequence>
                                             <xs:element type="xs:float" name="InputValue"/>
-                                            <xs:element type="xs:float" name="OutputExtrusion"/>
+                                            <xs:element type="xs:byte" name="OutputExtrusion"/>
                                           </xs:sequence>
                                         </xs:complexType>
                                       </xs:element>
