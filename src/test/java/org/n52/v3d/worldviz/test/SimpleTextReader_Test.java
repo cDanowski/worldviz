@@ -15,7 +15,7 @@ public class SimpleTextReader_Test {
 	public void test() {
 		SimpleTextFileLoader loader = new SimpleTextFileLoader();
 		
-		List<KeyValuePair> keyValuePairs = loader.extractKeyValuePairs(new File("data/CO2_ppm_world.dat"), 1);
+		List<KeyValuePair> keyValuePairs = loader.extractKeyValuePairs(new File("data/CO2_ppm_world_1960_2014.dat"), 1);
 		
 		Assert.assertTrue(keyValuePairs.size() > 0);
 		
