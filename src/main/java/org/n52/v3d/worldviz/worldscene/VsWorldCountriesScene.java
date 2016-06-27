@@ -64,13 +64,17 @@ import org.n52.v3d.worldviz.worldscene.helper.NormalVectorHelper;
  */
 public class VsWorldCountriesScene extends VsAbstractWorldScene {
 
-	// TODO Bezeichner des Landes fuer das DEF in X3D darf nicht verloren gehen
-	// (zwecks Klick auf ein Land und Abfrage zusaetzlicher Parameter!) -->
-	// Kopplung durch EAI/SAI???
+	protected static final String _COORDINATE_SIDE_WALLS = "_coordinate_sideWalls_";
 
+	protected static final String _MATERIAL_SIDE_WALLS = "_material_sideWalls_";
+	protected static final String _MATERIAL_BORDER = "_material_border_";
+	protected static final String _COORDINATE_SURFACE = "_coordinate_surface_";
+	protected static final String _MATERIAL_SURFACE = "_material_surface_";
+	protected static final String _COORDINATE_BORDER = "_coordinate_border_";
+	protected static final String COUNTRY_CODE = "Country code";
 	protected final double offsetForBorders = 0.001;
 	// holds the geometry of the world's countries
-	private List<VgAttrFeature> worldCountries = new ArrayList<VgAttrFeature>();
+	protected List<VgAttrFeature> worldCountries = new ArrayList<VgAttrFeature>();
 	private T3dColor defaultCountryBordersColor = new T3dColor(0.f, 0.f, 0.f);
 
 	// choose if the borders of the world's countries shall be drawn
@@ -79,6 +83,8 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 	private boolean extrudeCountries = false;
 
 	private final double defaultExtrusionHeight = 0;
+	protected List<VgIndexedTIN> currentVgTINs;
+	private VgAttrFeature currentFeature;
 
 	/**
 	 * Constructor that takes a filePath to which the generated scene
@@ -247,7 +253,9 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 	 * 
 	 * @param attrFeature
 	 */
-	private void writeAttrFeature(VgAttrFeature attrFeature) {
+	protected void writeAttrFeature(VgAttrFeature attrFeature) {
+		
+		this.currentFeature = attrFeature;
 
 		/*
 		 * Only geometries of type VgPolygon or VgMultiPolygon are allowed. Thus
@@ -313,6 +321,8 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 		List<VgIndexedTIN> vgTINs = new ArrayList<VgIndexedTIN>();
 
 		addTINsForPolygon(vgTINs, polygon);
+		
+		this.currentVgTINs = vgTINs;
 
 		if (this.extrudeCountries) {
 
@@ -323,7 +333,7 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 
 			writeSurfaceTINs(color, vgTINs, extrusionTINs);
 
-			writeSideWalls(polygon, color, extrusionHeight);
+			writeSideWalls(polygon, color, extrusionHeight, 0);
 
 		}
 
@@ -336,7 +346,7 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 
 		// write borders of polygon
 		if (drawBorders)
-			writeBorderForPolygon(polygon, extrusionHeight);
+			writeBorderForPolygon(polygon, extrusionHeight, 0);
 	}
 
 	/**
@@ -355,6 +365,8 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 			double extrusionHeight) {
 
 		List<VgIndexedTIN> vgTINs = calculateTriangulation(multiPolygon);
+		
+		this.currentVgTINs = vgTINs;
 
 		if (this.isExtrudeCountries()) {
 
@@ -384,13 +396,22 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 	 * @param polygon
 	 * @param color
 	 * @param extrusionHeight
+	 * @param index
+	 *            if this method has been called from a MultiPolygon loop, then
+	 *            this index will indicate the index of the polygon, which is
+	 *            important to create a unique DEF name; if it is called once
+	 *            for a polygon it should be set to 0!
 	 */
 	private void writeSideWalls(VgPolygon polygon, T3dColor color,
-			double extrusionHeight) {
+			double extrusionHeight, int index) {
+		Object countryCode = this.currentFeature.getAttributeValue(COUNTRY_CODE);
+		
 		wl("      <Shape>");
 		wl("        <Appearance>");
+		
+		String uniqueCountryMaterialName_sideWalls = countryCode + _MATERIAL_SIDE_WALLS + index;
 
-		wl("          <Material diffuseColor=\"" + color.getRed() + " "
+		wl("          <Material DEF=\""+ uniqueCountryMaterialName_sideWalls + "\" diffuseColor=\"" + color.getRed() + " "
 				+ color.getGreen() + " " + color.getBlue() + "\" />");
 		wl("        </Appearance>");
 
@@ -398,27 +419,92 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 		// of better performance; -> for X3DOM: no support for TriangleSet
 
 		wl("<TriangleSet ccw=\"true\" solid=\"true\" colorPerVertex=\"false\" normalPerVertex=\"false\">");
+		
+		String uniqueCountryCoordinateNamePerPolygon_sideWalls = countryCode + _COORDINATE_SIDE_WALLS + index;
+		String coordinateString = createCoordinateStringForSideWalls(polygon, extrusionHeight);
+		
+		wl("<Coordinate DEF=\"" + uniqueCountryCoordinateNamePerPolygon_sideWalls + "\" point=\"" + coordinateString+ "\"/>");
 
-		wl("<Coordinate point=\"");
+		wl("</TriangleSet>");
+		wl("      </Shape>");
 
+	}
+
+	private String createCoordinateStringForSideWalls(VgPolygon polygon, double extrusionHeight) {
 		// first process the outer boundary, then all holes
 		VgLinearRing outerBoundary = polygon.getOuterBoundary();
 
 		int numberOfHoles = polygon.getNumberOfHoles();
 
+		StringBuffer buffer = new StringBuffer(110);
 		// process outer boundary
-		writeSideWalls(outerBoundary, extrusionHeight);
+		appendCoordinateStringForLinearRing(outerBoundary, extrusionHeight, buffer);
 
 		// process holes
 		for (int i = 0; i < numberOfHoles; i++) {
-			writeSideWalls(polygon.getHole(i), extrusionHeight);
+			appendCoordinateStringForLinearRing(polygon.getHole(i), extrusionHeight, buffer);
 		}
+		
+		return buffer.toString();
+	}
 
-		wl("\"/>");
+	private StringBuffer appendCoordinateStringForLinearRing(VgLinearRing linearRing, double extrusionHeight, StringBuffer buffer) {
+		
+		// for each point of the polygon (except the last)
+				// calculate extruded version of this and the next point!
+				// mesh bottom and top (extruded) points ccw
 
-		wl("</TriangleSet>");
-		wl("      </Shape>");
+				int lastIndex = linearRing.getNumberOfVertices() - 1;
 
+				for (int i = 0; i < lastIndex; i++) {
+
+					// calculate offset versions
+					VgPoint bottomPoint = calculateOffsetBorderPoint(linearRing, i,
+							-offsetForBorders);
+					VgPoint extrudedPoint = calculateOffsetBorderPoint(linearRing, i,
+							extrusionHeight);
+
+					VgPoint bottomNextPoint = calculateOffsetBorderPoint(linearRing,
+							i + 1, -offsetForBorders);
+					VgPoint extrudedNextPoint = calculateOffsetBorderPoint(linearRing,
+							i + 1, extrusionHeight);
+
+					// write mesh of points as two triangles
+
+					// first triangle
+					appendCoordinateStringForTriangle(bottomPoint, extrudedPoint, bottomNextPoint, buffer);
+
+					// second triangle
+					appendCoordinateStringForTriangle(bottomNextPoint, extrudedPoint, extrudedNextPoint, buffer);
+
+				}
+
+				// process last point like above!
+
+				VgPoint lastBottomPoint = calculateOffsetBorderPoint(linearRing,
+						lastIndex, -offsetForBorders);
+				VgPoint lastExtrudedPoint = calculateOffsetBorderPoint(linearRing,
+						lastIndex, extrusionHeight);
+
+				VgPoint firstBottomPoint = calculateOffsetBorderPoint(linearRing, 0,
+						-offsetForBorders);
+				VgPoint firstExtrudedPoint = calculateOffsetBorderPoint(linearRing, 0,
+						extrusionHeight);
+
+				appendCoordinateStringForTriangle(lastBottomPoint, firstBottomPoint, lastExtrudedPoint, buffer);
+
+				appendCoordinateStringForTriangle(firstBottomPoint, lastExtrudedPoint,
+						firstExtrudedPoint, buffer);
+				
+				return buffer;
+	}
+
+	private StringBuffer appendCoordinateStringForTriangle(VgPoint p1, VgPoint p2, VgPoint p3, StringBuffer buffer) {
+		appendPoint(p1, buffer).append(", ");
+		appendPoint(p2, buffer).append(", ");
+		appendPoint(p3, buffer).append(", ");
+		
+		return buffer;
 	}
 
 	/**
@@ -501,7 +587,7 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 
 			VgPolygon polygon = (VgPolygon) multiPolygon.getGeometry(i);
 
-			writeSideWalls(polygon, color, extrusionHeight);
+			writeSideWalls(polygon, color, extrusionHeight, i);
 		}
 
 	}
@@ -550,7 +636,7 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 	 * @return a list of the same {@link VgIndexedTIN}-objects with an
 	 *         additional offset in height direction.
 	 */
-	private List<VgIndexedTIN> extrudeTINs(List<VgIndexedTIN> vgTINs,
+	protected List<VgIndexedTIN> extrudeTINs(List<VgIndexedTIN> vgTINs,
 			double extrusionHeight) {
 
 		// normal vector determines the height direction
@@ -632,7 +718,7 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 
 			VgPolygon polygon = (VgPolygon) multiPolygon.getGeometry(k);
 
-			writeBorderForPolygon(polygon, extrusionHeight);
+			writeBorderForPolygon(polygon, extrusionHeight, k);
 		}
 	}
 
@@ -646,12 +732,22 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 	 *            the value which shall be used to offset/extrude the geometry
 	 *            (here needed to draw the border on top of the extruded
 	 *            geometry!)
+	 * @param index
+	 *            if this method has been called from a MultiPolygon loop, then
+	 *            this index will indicate the index of the polygon, which is
+	 *            important to create a unique DEF name; if it is called once
+	 *            for a polygon it should be set to 0!
 	 */
-	private void writeBorderForPolygon(VgPolygon polygon, double extrusionHeight) {
+	private void writeBorderForPolygon(VgPolygon polygon, double extrusionHeight, int index) {
 
+		Object countryCode = this.currentFeature.getAttributeValue(COUNTRY_CODE);
+		
 		wl("      <Shape>");
 		wl("        <Appearance>");
-		wl("          <Material diffuseColor=\""
+		
+		String uniqueCountryMaterialNamePerPolygon_border = countryCode + _MATERIAL_BORDER + index;
+		
+		wl("          <Material DEF=\"" + uniqueCountryMaterialNamePerPolygon_border + "\" diffuseColor=\""
 				+ defaultCountryBordersColor.getRed() + " "
 				+ defaultCountryBordersColor.getGreen() + " "
 				+ defaultCountryBordersColor.getBlue() + "\"></Material>");
@@ -665,8 +761,19 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 
 		wl("\">");
 
-		w("<Coordinate point=\"");
+		String uniqueCountryCoordinateNamePerPolygon_border = countryCode + _COORDINATE_BORDER + index;
+		String coordinateString = createCoordinateStringForPolygon_forBorder(polygon, extrusionHeight);
+		
+		w("<Coordinate DEF=\"" + uniqueCountryCoordinateNamePerPolygon_border + "\" point=\"" + coordinateString + "\"/>");
 
+		wl("</IndexedLineSet>");
+
+		wl("      </Shape>");
+	}
+
+	private String createCoordinateStringForPolygon_forBorder(VgPolygon polygon, double extrusionHeight) {
+		StringBuffer buffer = new StringBuffer(110);
+		
 		for (int i = 0; i < polygon.getOuterBoundary().getNumberOfVertices(); i++) {
 
 			// calculate a slightly offset point so that the border will be
@@ -674,13 +781,9 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 			VgPoint calculatedBorderPoint = calculateOffsetBorderPoint(polygon,
 					i, extrusionHeight);
 
-			writePoint(calculatedBorderPoint);
+			appendPoint(calculatedBorderPoint, buffer);
 		}
-		wl("\"/>");
-
-		wl("</IndexedLineSet>");
-
-		wl("      </Shape>");
+		return buffer.toString();
 	}
 
 	/**
@@ -817,12 +920,15 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 	 *            country
 	 */
 	private void writeSurfaceTINs(T3dColor color, List<VgIndexedTIN> vgTINs) {
+		Object countryCode = this.currentFeature.getAttributeValue(COUNTRY_CODE);
+		
 		for (VgIndexedTIN vgIndexedTIN : vgTINs) {
 
 			wl("      <Shape>");
 			wl("        <Appearance>");
 
-			wl("          <Material diffuseColor=\"" + color.getRed() + " "
+			String uniqueCountryMaterialName = countryCode + "_material";
+			wl("          <Material DEF=\"" + uniqueCountryMaterialName + "\" diffuseColor=\"" + color.getRed() + " "
 					+ color.getGreen() + " " + color.getBlue() + "\"/>");
 			wl("        </Appearance>");
 
@@ -849,7 +955,8 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 			// }
 			// wl("\"/>");
 
-			w("<Coordinate point=\"");
+			String uniqueCountrySurfaceCoordinateNamePerTIN = countryCode + "_coordinate";
+			w("<Coordinate DEF=\"" + uniqueCountrySurfaceCoordinateNamePerTIN + "\" point=\"");
 			for (int i = 0; i < vgIndexedTIN.numberOfPoints(); i++) {
 				VgPoint point = vgIndexedTIN.getPoint(i);
 				writePoint(point);
@@ -882,18 +989,21 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 		 * to create an extruded version, the vgTINs and extrudedTINs must be
 		 * meshed
 		 */
+		
+		Object countryCode = this.currentFeature.getAttributeValue(COUNTRY_CODE);
 
-		for (int t = 0; t < vgTINs.size(); t++) {
+		for (int t = 0; t < extrusionTINs.size(); t++) {
 
-			VgIndexedTIN bottomTIN = vgTINs.get(t);
 			VgIndexedTIN topTIN = extrusionTINs.get(t);
 
 			wl("      <Shape>");
 			wl("        <Appearance>");
 
 			// TODO check transparency
+			
 
-			wl("          <Material diffuseColor=\"" + color.getRed() + " "
+			String uniqueCountryMaterialNamePerTIN_surface = countryCode + _MATERIAL_SURFACE + t;
+			wl("          <Material DEF=\"" + uniqueCountryMaterialNamePerTIN_surface + "\" diffuseColor=\"" + color.getRed() + " "
 					+ color.getGreen() + " " + color.getBlue() + "\" "
 
 					// + "transparency=\"0.3\""
@@ -947,18 +1057,33 @@ public class VsWorldCountriesScene extends VsAbstractWorldScene {
 			// }
 
 			// top points
-			w("<Coordinate point=\"");
-			for (int k = 0; k < topTIN.numberOfPoints(); k++) {
-				VgPoint point = topTIN.getPoint(k);
-				writePoint(point);
-			}
-
-			wl("\"/>");
+			
+			
+			String uniqueCountryCoordinateNamePerTIN_surface = countryCode + _COORDINATE_SURFACE + t;
+			
+			String coordinateString = createCoordinateString(topTIN);
+			
+			w("<Coordinate DEF=\"" + uniqueCountryCoordinateNamePerTIN_surface + "\" point=\"" + coordinateString +"\"/>");
 
 			wl("</IndexedFaceSet>");
 			wl("      </Shape>");
+			
 		}
 
+	}
+
+	protected String createCoordinateString(VgIndexedTIN topTIN) {
+		
+		StringBuffer buffer = new StringBuffer(110);
+		for (int k = 0; k < topTIN.numberOfPoints(); k++) {
+			VgPoint point = topTIN.getPoint(k);
+			appendPoint(point, buffer);
+		}
+		return buffer.toString();
+	}
+
+	private StringBuffer appendPoint(VgPoint point, StringBuffer buffer) {
+		return buffer.append(this.decimalFormatter.format(point.getX())).append(" ").append(this.decimalFormatter.format(point.getZ())).append(" ").append(this.decimalFormatter.format(-point.getY())).append(" ");
 	}
 
 	/**
