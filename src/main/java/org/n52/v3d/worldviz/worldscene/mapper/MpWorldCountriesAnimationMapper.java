@@ -10,6 +10,7 @@ import org.n52.v3d.worldviz.extensions.mappers.MpValue2ExtrudedAttrFeature_forAn
 import org.n52.v3d.worldviz.worldscene.VsAbstractWorldScene;
 import org.n52.v3d.worldviz.worldscene.VsAnimatedWorldCountriesOnASphereScene;
 import org.n52.v3d.worldviz.worldscene.VsWorldCountriesOnASphereScene;
+import org.n52.v3d.worldviz.worldscene.VsWorldCountriesScene;
 import org.n52.v3d.worldviz.worldscene.helper.FindExtrudeAndColorMissingCountriesHelper;
 import org.n52.v3d.worldviz.worldscene.helper.FindExtrudeAndColorMissingCountriesHelper_forAnimation;
 
@@ -32,7 +33,7 @@ public class MpWorldCountriesAnimationMapper extends MpWorldCountriesMapper {
 	@Override
 	protected VsWorldCountriesOnASphereScene initializeScene() {
 		// TODO Auto-generated method stub
-		return new VsAnimatedWorldCountriesOnASphereScene();
+		return new VsAnimatedWorldCountriesOnASphereScene(firstYear, lastYear, interval);
 	}
 
 	@Override
@@ -47,6 +48,10 @@ public class MpWorldCountriesAnimationMapper extends MpWorldCountriesMapper {
 		this.firstYear = yearsConfig.getFirstYear();
 		this.lastYear = yearsConfig.getLastYear();
 		this.interval = yearsConfig.getInterval();
+		
+		((VsAnimatedWorldCountriesOnASphereScene) scene).setFirstYear(firstYear);
+		((VsAnimatedWorldCountriesOnASphereScene) scene).setLastYear(lastYear);
+		((VsAnimatedWorldCountriesOnASphereScene) scene).setInterval(interval);
 	}
 
 	@Override
@@ -60,7 +65,7 @@ public class MpWorldCountriesAnimationMapper extends MpWorldCountriesMapper {
 	}
 
 	@Override
-	protected List<VgAttrFeature> transformGeoObjectsToSceneObjects(VsWorldCountriesOnASphereScene worldCountriesScene,
+	protected List<VgAttrFeature> transformGeoObjectsToSceneObjects(VsWorldCountriesScene worldCountriesScene,
 			List<VgAttrFeature> geoObjects) {
 
 		/*

@@ -57,6 +57,11 @@ public class FindExtrudeAndColorMissingCountriesHelper_forAnimation extends Find
 
 				neutralFeature = extrusionMapper.extrudeWithNeutralHeight(String.valueOf(currentYear), neutralFeature);
 			}
+			
+			/*
+			 * set the "Country code" attribute with the iso3166-2 value!
+			 */
+			addISO3166CountryCodeAttribute(neutralFeature, remainingCountry);
 
 			extrudedColoredRemainingCountries.add(neutralFeature);
 		}
@@ -86,6 +91,11 @@ public class FindExtrudeAndColorMissingCountriesHelper_forAnimation extends Find
 				neutralFeature = extrusionMapper.extrudeWithNeutralHeight(String.valueOf(currentYear), neutralFeature);
 			}
 
+			/*
+			 * set the "Country code" attribute with the iso3166-2 value!
+			 */
+			addISO3166CountryCodeAttribute(neutralFeature, remainingCountry);
+			
 			extrudedColoredRemainingCountries.add(neutralFeature);
 		}
 

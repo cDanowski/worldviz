@@ -54,8 +54,9 @@ import org.n52.v3d.triturus.vgis.VgAttrFeature;
  */
 public class FindExtrudeAndColorMissingCountriesHelper {
 
+	private static final String COUNTRY_CODE = "Country code";
 	private Map<String, VgAttrFeature> allCountriesMap;
-	private String attributeName_iso3166_alpha2_code = "Country code";
+	private String attributeName_iso3166_alpha2_code = COUNTRY_CODE;
 
 	private CountryBordersLODEnum worldBordersLOD;
 
@@ -220,12 +221,25 @@ public class FindExtrudeAndColorMissingCountriesHelper {
 
 			VgAttrFeature extrudedColoredCountry = extrusionMapper
 					.extrudeWithNeutralHeight(coloredCountry);
+			
+			/*
+			 * set the "Country code" attribute with the iso3166-2 value!
+			 */
+			addISO3166CountryCodeAttribute(extrudedColoredCountry, remainingCountry);
 
 			extrudedColoredRemainingCountries.add(extrudedColoredCountry);
 		}
 
 		return extrudedColoredRemainingCountries;
 
+	}
+
+	protected void addISO3166CountryCodeAttribute(VgAttrFeature feature, Entry<String, VgAttrFeature> remainingCountry) {
+		String countryCode = remainingCountry.getKey();
+		
+		feature.addAttribute(COUNTRY_CODE, String.class.toString());
+		feature.setAttributeValue(COUNTRY_CODE, countryCode);
+		
 	}
 
 	protected List<VgAttrFeature> extrudeAndColorRemainingCountries(
@@ -247,6 +261,11 @@ public class FindExtrudeAndColorMissingCountriesHelper {
 
 			VgAttrFeature extrudedColoredCountry = extrusionMapper
 					.extrudeWithNeutralHeight(coloredCountry);
+			
+			/*
+			 * set the "Country code" attribute with the iso3166-2 value!
+			 */
+			addISO3166CountryCodeAttribute(extrudedColoredCountry, remainingCountry);
 
 			extrudedColoredRemainingCountries.add(extrudedColoredCountry);
 		}

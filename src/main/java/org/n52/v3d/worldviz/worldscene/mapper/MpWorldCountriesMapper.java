@@ -11,6 +11,7 @@ import org.n52.v3d.worldviz.extensions.mappers.MpValue2ExtrudedAttrFeature;
 import org.n52.v3d.worldviz.helper.StringParser;
 import org.n52.v3d.worldviz.worldscene.VsAbstractWorldScene;
 import org.n52.v3d.worldviz.worldscene.VsWorldCountriesOnASphereScene;
+import org.n52.v3d.worldviz.worldscene.VsWorldCountriesScene;
 import org.n52.v3d.worldviz.worldscene.helper.FindExtrudeAndColorMissingCountriesHelper;
 
 import de.hsbo.fbg.worldviz.WvizConfigDocument;
@@ -187,7 +188,7 @@ public class MpWorldCountriesMapper extends MpAbstractXmlDatasetToGlobeVisualize
 		return new MpValue2ExtrudedAttrFeature();
 	}
 
-	protected List<VgAttrFeature> transformGeoObjectsToSceneObjects(VsWorldCountriesOnASphereScene worldCountriesScene,
+	protected List<VgAttrFeature> transformGeoObjectsToSceneObjects(VsWorldCountriesScene worldCountriesScene2,
 			List<VgAttrFeature> geoObjects) {
 
 		List<VgAttrFeature> coloredSceneObjects = this.colorMapper.transform(attributeNameForMapping, geoObjects);
@@ -214,10 +215,10 @@ public class MpWorldCountriesMapper extends MpAbstractXmlDatasetToGlobeVisualize
 		return allSceneObjects;
 	}
 
-	private void addSceneObjectsToWorldScene(VsWorldCountriesOnASphereScene worldCountriesScene,
+	private void addSceneObjectsToWorldScene(VsWorldCountriesScene worldCountriesScene2,
 			List<VgAttrFeature> sceneObjects) {
 		for (VgAttrFeature sceneObject : sceneObjects) {
-			worldCountriesScene.addWorldCountry(sceneObject);
+			worldCountriesScene2.addWorldCountry(sceneObject);
 		}
 
 	}
