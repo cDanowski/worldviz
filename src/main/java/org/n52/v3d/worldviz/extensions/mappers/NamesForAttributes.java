@@ -48,7 +48,8 @@ public final class NamesForAttributes {
 	/**
 	 * 
 	 */
-	public static String attributeNameForColor = "ColorForVisualization";
-	public static String attributeNameForExtrusion = "ExtrusionHeightForVisualization";
+	public final static String attributeNameForColor = "ColorForVisualization";
+	public final static String attributeNameForExtrusion = "ExtrusionHeightForVisualization";
+	public final static String attributeNameForIdentifier = "UniqueIdentifier";
 
 }
