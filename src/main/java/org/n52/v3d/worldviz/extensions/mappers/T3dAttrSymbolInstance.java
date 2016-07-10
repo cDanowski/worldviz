@@ -139,6 +139,19 @@ public class T3dAttrSymbolInstance extends T3dSymbolInstance {
 	public List<AttributeValuePair> getAttributeValuePairs() {
 		return attributeValuePairs;
 	}
+	
+	public Object getAttributeValue(String attributeName){
+		Object value = null;
+		
+		for (AttributeValuePair attributeValuePair : attributeValuePairs) {
+			if (attributeValuePair.getAttributeName().equalsIgnoreCase(attributeName)){
+				value = attributeValuePair.getAttributeValue();
+				break;
+			}
+		}
+		
+		return value;
+	};
 
 	/**
 	 * Simply adds an {@link AttributeValuePair}. Note, that no check of
