@@ -25,6 +25,12 @@ public class WorldSharesComputer {
 		 * extract entry with key="World".
 		 */
 		DatasetEntry worldEntry = datasetEntries.get("World");
+		
+		/**
+		 * remove World entry from the list, otherwise it would be overridden 
+		 */
+		datasetEntries.remove("World");
+		
 		String[] attributes = worldEntry.getAttributes();
 
 		/*
@@ -52,7 +58,7 @@ public class WorldSharesComputer {
 			Entry<String, DatasetEntry> nextEntry = iterator.next();
 
 			DatasetEntry country = nextEntry.getValue();
-
+			
 			for (String attributeName : attributesHeaders) {
 				String totalValueAsText = worldEntry.getValue(attributeName);
 				String countryValueAsText = country.getValue(attributeName);
