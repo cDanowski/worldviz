@@ -41,6 +41,7 @@ import org.n52.v3d.triturus.t3dutil.symboldefs.T3dCube;
 import org.n52.v3d.triturus.t3dutil.symboldefs.T3dCylinder;
 import org.n52.v3d.triturus.t3dutil.symboldefs.T3dSphere;
 import org.n52.v3d.triturus.vgis.VgPoint;
+import org.n52.v3d.worldviz.extensions.mappers.NamesForAttributes;
 import org.n52.v3d.worldviz.extensions.mappers.T3dAttrSymbolInstance;
 
 /**
@@ -69,6 +70,12 @@ public class VsCartographicSymbolsScene extends VsAbstractWorldScene {
 	 * transparency of the symbols
 	 */
 	private float transparency = 0.25f;
+	
+	/*
+	 * alternate uniqueIdentifier, which will simply be incremented for each
+	 * symbol, if not real identifier has been specified
+	 */
+	private int numericIdentifier = 0;
 
 	public VsCartographicSymbolsScene(String filePath) {
 		super(filePath);
@@ -175,8 +182,17 @@ public class VsCartographicSymbolsScene extends VsAbstractWorldScene {
 
 	}
 
-	private void writeT3dAttrSymbolInstance(T3dAttrSymbolInstance attrSymbol) {
+	protected void writeT3dAttrSymbolInstance(T3dAttrSymbolInstance attrSymbol) {
 
+		String uniqueIdentifier = createUniqueIdentifierPerSymbol(attrSymbol);
+		String idTranslation = uniqueIdentifier + "_translation";
+		String idRotationX = uniqueIdentifier + "_rotation_x";
+		String idRotationY = uniqueIdentifier + "_rotation_y";
+		String idRotationZ = uniqueIdentifier + "_rotation_z";
+		String idScale = uniqueIdentifier + "_scale";
+		String idMaterial = uniqueIdentifier + "_material";
+		
+		
 		/*
 		 * position
 		 */
@@ -207,17 +223,17 @@ public class VsCartographicSymbolsScene extends VsAbstractWorldScene {
 		double scaleY = attrSymbol.getyScale() * scaleTotal;
 		double scaleZ = attrSymbol.getzScale() * scaleTotal;
 
-		wl("<Transform translation=\""
+		wl("<Transform DEF=\"" + idTranslation + "\" translation=\""
 				+ this.decimalFormatter.format(position.getX()) + " "
 				+ this.decimalFormatter.format(position.getY()) + " "
 				+ this.decimalFormatter.format(position.getZ()) + "\">");
-		wl("	<Transform rotation=\"1 0 0 "
+		wl("	<Transform DEF=\"" + idRotationX + "\" rotation=\"1 0 0 "
 				+ this.decimalFormatter.format(angle_xAxis) + "\">");
-		wl("		<Transform rotation=\"0 1 0 "
+		wl("		<Transform DEF=\"" + idRotationY + "\" rotation=\"0 1 0 "
 				+ this.decimalFormatter.format(angle_yAxis) + "\">");
-		wl("			<Transform rotation=\"0 0 1 "
+		wl("			<Transform DEF=\"" + idRotationZ + "\" rotation=\"0 0 1 "
 				+ this.decimalFormatter.format(angle_zAxis) + "\">");
-		wl("				<Transform scale=\"" + this.decimalFormatter.format(scaleX)
+		wl("				<Transform DEF=\"" + idScale + "\" scale=\"" + this.decimalFormatter.format(scaleX)
 				+ " " + this.decimalFormatter.format(scaleY) + " "
 				+ this.decimalFormatter.format(scaleZ) + "\">");
 
@@ -230,7 +246,7 @@ public class VsCartographicSymbolsScene extends VsAbstractWorldScene {
 
 		wl("					<Shape>");
 		wl("						<Appearance>");
-		wl("							<Material diffuseColor=\"" + color.getRed() + " "
+		wl("							<Material DEF=\"" + idMaterial + "\" diffuseColor=\"" + color.getRed() + " "
 				+ color.getGreen() + " " + color.getBlue()
 				+ "\" transparency=\"" + transparency + "\"/>");
 
@@ -257,6 +273,28 @@ public class VsCartographicSymbolsScene extends VsAbstractWorldScene {
 		wl("	</Transform>");
 		wl("</Transform>");
 
+	}
+
+	protected String createUniqueIdentifierPerSymbol(T3dAttrSymbolInstance attrSymbol) {
+		String id = "";
+		/*
+		 * can be overridden by child classes in order to provide unique
+		 * identifiers if needed.
+		 * 
+		 * TODO maybe we just use ANOTHER ATTRIBUTE like "uniqueID" that is set
+		 * previously to each element (before they are added to the scene.) Then
+		 * we just look for this attribute. If it is not present we return null.
+		 */
+		Object uniqueID = attrSymbol.getAttributeValue(NamesForAttributes.attributeNameForIdentifier);
+		if(uniqueID != null)
+			id = (String) uniqueID;
+		
+		else{
+			id = String.valueOf(this.numericIdentifier);
+			this.numericIdentifier ++;
+		}
+		
+		return id;
 	}
 
 	/**
