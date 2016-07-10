@@ -346,7 +346,10 @@ public abstract class VsAbstractWorldScene extends VsScene {
 				w("    <Viewpoint position='" + this.x3dViewpointPosition + "'");
 				if (this.x3dViewpointOrientation != null)
 					w(" orientation='" + this.x3dViewpointOrientation + "'");
-				wl("></Viewpoint>");
+				/*
+				 * add center of Rotation
+				 */
+				wl(" centerOfRotation='0 0 0'></Viewpoint>");
 			}
 
 		} catch (FileNotFoundException e) {
