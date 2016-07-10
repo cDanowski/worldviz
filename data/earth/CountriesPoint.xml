@@ -21,7 +21,7 @@ Author: Benno Schmidt. Department of Geodesy. Bochum University of Applied Scien
 	</GeneralInformation>
 	<TableStructure>
 		<Property dataType="ENE:iso3166-2" uniqueID="true">
-			<Title>ISO 3166-2 code</Title>
+			<Title>Country code</Title>
 			<Description>Country code ISO 3166-2</Description>
 			<GeoReference featureType="ENE:CountryCode" externalGeometries="true">
 				<CRS>ENE:CountriesWorldwide:iso3166-2</CRS>
@@ -1143,6 +1143,15 @@ Author: Benno Schmidt. Department of Geodesy. Bochum University of Applied Scien
 			<Value>36.504</Value>
 		</Entry>
 		<Entry>
+			<Value>KV</Value>
+			<Value>KSV</Value>
+			<Value>Kosovo</Value>
+			<Value></Value>
+			<Value></Value>
+			<Value>20.945</Value>
+			<Value>42.572</Value>
+		</Entry>
+		<Entry>
 			<Value>KW</Value>
 			<Value>KWT</Value>
 			<Value>Kuwait</Value>
@@ -1906,6 +1915,15 @@ Author: Benno Schmidt. Department of Geodesy. Bochum University of Applied Scien
 			<Value>452468</Value>
 			<Value>-55.912</Value>
 			<Value>4.127</Value>
+		</Entry>
+		<Entry>
+			<Value>SS</Value>
+			<Value></Value>
+			<Value>South Sudan</Value>
+			<Value></Value>
+			<Value></Value>
+			<Value>30.752</Value>
+			<Value>6.465</Value>
 		</Entry>
 		<Entry>
 			<Value>ST</Value>
