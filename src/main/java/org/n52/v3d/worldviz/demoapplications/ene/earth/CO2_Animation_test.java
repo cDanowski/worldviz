@@ -86,8 +86,6 @@ public class CO2_Animation_test {
 		 */
 		List<VgAttrFeature> countries_shares = carbonEmissionsShares_1960_2014.getFeatures();
 		
-		double[] test = this.setValuesForAttribute(countries_shares);
-		
 		List<VgAttrFeature> countryPointFeatures = countriesPoint.getFeatures();
 		Map<String, VgAttrFeature> countryPointMap = createCountryCodeMap(countryPointFeatures);
 
@@ -155,7 +153,7 @@ public class CO2_Animation_test {
 		// MpWorldCountriesAnimationMapper mapper = new
 		// MpWorldCountriesAnimationMapper(wVizConfigFile, null);
 
-		VsAnimatedCartographicObjectsScene animatedScene = createAnimatedScene(co2_ppm_perCountry, countryPointMap);
+		VsAnimatedCartographicObjectsScene animatedScene = createAnimatedScene(co2_ppm_perCountry, countryPointMap, co2_ppm_world_pairs);
 
 		animatedScene.setOutputFile(
 				new File("C:\\Users\\Christian\\Documents\\git\\worldviz\\test\\animation\\CO2_Animation.x3d"));
@@ -177,7 +175,7 @@ public class CO2_Animation_test {
 	}
 
 	private VsAnimatedCartographicObjectsScene createAnimatedScene(List<VgAttrFeature> co2_ppm_perCountry,
-			Map<String, VgAttrFeature> countryPointMap) {
+			Map<String, VgAttrFeature> countryPointMap, List<KeyValuePair> co2_ppm_world_pairs) {
 		String latAttr = "Latitude";
 		String lonAttr = "Longitude";
 
@@ -211,9 +209,24 @@ public class CO2_Animation_test {
 		}
 
 		scene.setRadius(30);
+		
+		scene.setSceneTitle("CO2 PPM shares");
+		scene.setAdditionalTextPerYear(createAdditionalTextValues(co2_ppm_world_pairs));
 
 		return scene;
 
+	}
+
+	private String[] createAdditionalTextValues(List<KeyValuePair> co2_ppm_world_pairs) {
+		String[] additionalTextValues = new String[co2_ppm_world_pairs.size()];
+		
+		String constantPreText = "PPM concentration: ";
+		
+		for(int i=0; i<co2_ppm_world_pairs.size(); i++){
+			additionalTextValues[i] = "\"" + constantPreText + "\" , \"" + co2_ppm_world_pairs.get(i).getValue() + "\"";
+		}
+		
+		return additionalTextValues;
 	}
 
 	private void transformToAttrSymbols(List<VgAttrFeature> attributedCO2ppm_allCountries,

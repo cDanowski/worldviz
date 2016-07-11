@@ -15,10 +15,15 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 	private static final String CURRENT_YEAR_TEXT_NODE = "CurrentYear";
 	private static final String CHANGE_YEAR_SCRIPT_NODE = "ChangeYearScript";
 	private static final String CHANGE_YEAR_SCRIPT_NODE_TEXT_FIELD = "textValue";
+	private static final String ADDITIONAL_TEXT_PER_YEAR_TEXT_NODE = "AdditionalText";
+	private static final String ADDITIONAL_TEXT_SCRIPT_NODE = "ChangeAdditionalTextScript";
+	private static final String ADDITIONAL_TEXT_SCRIPT_NODE_TEXT_FIELD = "textValue";
 	private int firstYear;
 	private int lastYear;
 	private int interval;
 	private int animationDuration = 5;
+	private String sceneTitle = "CO2-ppm shares";
+	private String[] additionalTextPerYear;
 
 	public VsAnimatedCartographicObjectsScene(String outputfile) {
 		super(outputfile);
@@ -30,6 +35,30 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		this.firstYear = firstYear;
 		this.lastYear = lastYear;
 		this.interval = interval;
+	}
+
+	public int getAnimationDuration() {
+		return animationDuration;
+	}
+
+	public void setAnimationDuration(int animationDuration) {
+		this.animationDuration = animationDuration;
+	}
+
+	public String getSceneTitle() {
+		return sceneTitle;
+	}
+
+	public void setSceneTitle(String sceneTitle) {
+		this.sceneTitle = sceneTitle;
+	}
+
+	public String[] getAdditionalTextPerYear() {
+		return additionalTextPerYear;
+	}
+
+	public void setAdditionalTextPerYear(String[] additionalTextPerYear) {
+		this.additionalTextPerYear = additionalTextPerYear;
 	}
 
 	public int getFirstYear() {
@@ -66,21 +95,14 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		 */
 		writeGlobalTimeSensor();
 
-		/*
-		 * HUD
-		 */
-		writeHUD();
-		
-		
-
 		int amountOfFeatures = cartographicSymbols.size();
 
 		String keyValueForInterpolators = createKeyAttributeValue();
 		
 		/*
-		 * write script node for changing the text, which shows the current year!
+		 * HUD
 		 */
-		writeYearTextScriptNode(keyValueForInterpolators);
+		writeHUD(keyValueForInterpolators);
 
 		for (int i = 0; i < amountOfFeatures; i++) {
 
@@ -298,7 +320,7 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 
 	}
 
-	private void writeHUD() {
+	private void writeHUD(String keyValueForInterpolators) {
 		// use proximitry sensor and create ROUTE statements
 		this.wl("<ProximitySensor DEF='" + PROX_SENSOR_NAME + "' center='0 0 0' size='1000 1000 1000'/>");
 
@@ -306,8 +328,8 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		this.wl("	<Transform DEF='HUDpos' translation='-2.7 1.7 -5.0'>");
 
 		this.wl("	<Shape>");
-		this.wl("		<Text string='\"CO2-ppm shares\" \"" + this.firstYear + "-" + this.lastYear + "\"'>");
-		this.wl("			<FontStyle size='.2' justify='\"MIDDLE\" \"MIDDLE\"'/>");
+		this.wl("		<Text string='\"" + this.sceneTitle + "\" \"" + this.firstYear + "-" + this.lastYear + "\"'>");
+		this.wl("			<FontStyle size='.1' justify='\"MIDDLE\" \"MIDDLE\"'/>");
 		this.wl("		</Text>");
 		this.wl("		<Appearance>");
 		this.wl("			<Material diffuseColor='0.8 0.8 0.8'/>");
@@ -323,7 +345,7 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 
 		this.wl("	<Shape>");
 		this.wl("		<Text DEF='" + CURRENT_YEAR_TEXT_NODE + "' string='" + this.firstYear + "'>");
-		this.wl("			<FontStyle size='.2' justify='\"MIDDLE\" \"MIDDLE\"'/>");
+		this.wl("			<FontStyle size='.1' justify='\"MIDDLE\" \"MIDDLE\"'/>");
 		this.wl("		</Text>");
 		this.wl("		<Appearance>");
 		this.wl("			<Material diffuseColor='0.8 0.8 0.8'/>");
@@ -331,6 +353,34 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		this.wl("	</Shape>");
 
 		this.wl("	</Transform>");
+		
+		/*
+		 * write script node for changing the text, which shows the current year!
+		 */
+		writeYearTextScriptNode(keyValueForInterpolators);
+		
+		/*
+		 * changing textNode showing additional text from array
+		 */
+		if (this.additionalTextPerYear != null && this.additionalTextPerYear.length > 0) {
+			this.wl("	<Transform translation='-2.7 0.9 -5.0'>");
+
+			this.wl("	<Shape>");
+			this.wl("		<Text DEF='" + ADDITIONAL_TEXT_PER_YEAR_TEXT_NODE + "' string='" + this.additionalTextPerYear[0] + "'>");
+			this.wl("			<FontStyle size='.1' justify='\"MIDDLE\" \"MIDDLE\"'/>");
+			this.wl("		</Text>");
+			this.wl("		<Appearance>");
+			this.wl("			<Material diffuseColor='0.8 0.8 0.8'/>");
+			this.wl("		</Appearance>");
+			this.wl("	</Shape>");
+
+			this.wl("	</Transform>");
+			
+			/*
+			 * write script node for changing the text, which shows the current year!
+			 */
+			writeAdditionalTextScriptNode(keyValueForInterpolators);
+		}
 		
 		this.wl("</Transform>");
 
@@ -342,8 +392,7 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 
 	}
 	
-	private void writeYearTextScriptNode(String keyValueForInterpolators) {
-		
+	private void writeAdditionalTextScriptNode(String keyValueForInterpolators) {
 		/*
 		 * use the value of the textNode as input for script node
 		 * 
@@ -351,6 +400,80 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		 * 
 		 * identify which value is currently used --> use the subsequent array element as output
 		 */
+		
+		this.wl("<Script DEF='" + ADDITIONAL_TEXT_SCRIPT_NODE+ "' directOutput='true'>");
+		this.wl("	<field name='" + ADDITIONAL_TEXT_SCRIPT_NODE_TEXT_FIELD + "' accessType='inputOnly' type='SFInt32'/>");
+		this.wl("	<field name='additionalTextPerYear' accessType='initializeOnly' type='SFNode'>");
+		this.wl("		<Text USE='" + ADDITIONAL_TEXT_PER_YEAR_TEXT_NODE + "' />");
+		this.wl("	</field>");
+		
+		this.wl("	<![CDATA[ecmascript:");
+		
+		/*
+		 * initializeFunction
+		 */
+		this.wl("		function initialize() {");
+		this.wl("			additionalTextPerYear.string = new MFString (" + this.additionalTextPerYear[0] + ");");
+		this.wl("		}"); //end initialize function
+		
+		/*
+		 * change text function
+		 */
+		this.wl("		function " + ADDITIONAL_TEXT_SCRIPT_NODE_TEXT_FIELD + "(index) {");
+		
+		this.wl("			switch (index) {");
+		
+		for(int i=0; i<this.additionalTextPerYear.length; i++){
+			this.wl("				case " + i + ":");
+			
+			this.wl("					additionalTextPerYear.string = new MFString(" + this.additionalTextPerYear[i] + ");");
+			
+			this.wl("					break;");
+		}
+		/*
+		 * default case
+		 */
+		this.wl("				default:");
+		
+		this.wl("					additionalTextPerYear.string = new MfString(" + this.additionalTextPerYear[0] + ");");
+
+		this.wl("			}"); // end switch
+		
+		this.wl("		}"); // end change text function
+		
+		this.wl("	]]>");
+		
+		this.wl("</Script>");
+		
+		/*
+		 * create an integer sequencer that will trigger the changeText event
+		 */
+		String uniqueTextChangerSequencerName = "AdditionalTextChangeSequencer";
+		String textChangerSequencerValue = createAdditionalTextChangerSequencerValue();
+		this.wl("<IntegerSequencer DEF=\"" + uniqueTextChangerSequencerName + "\" key=\"" + keyValueForInterpolators
+				+ "\" keyValue=\"" + textChangerSequencerValue + "\" />");
+		
+		this.writeRoute(TIME_SENSOR_NAME, "fraction_changed", uniqueTextChangerSequencerName, "set_fraction");
+		this.writeRoute(uniqueTextChangerSequencerName, "value_changed", ADDITIONAL_TEXT_SCRIPT_NODE, ADDITIONAL_TEXT_SCRIPT_NODE_TEXT_FIELD);
+		
+		
+	}
+
+	private String createAdditionalTextChangerSequencerValue() {
+		/*
+		 * use sequencer to hold array indices! which are then used to access the array
+		 */
+		
+		StringBuffer buffer = new StringBuffer(110);
+
+		for (int index = 0; index < this.additionalTextPerYear.length; index ++) {
+			buffer.append(index + " ");
+		}
+
+		return buffer.toString();
+	}
+
+	private void writeYearTextScriptNode(String keyValueForInterpolators) {
 		
 		this.wl("<Script DEF='" + CHANGE_YEAR_SCRIPT_NODE+ "' directOutput='true'>");
 		this.wl("	<field name='" + CHANGE_YEAR_SCRIPT_NODE_TEXT_FIELD+ "' accessType='inputOnly' type='SFInt32'/>");
@@ -364,7 +487,7 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		 * initializeFunction
 		 */
 		this.wl("		function initialize() {");
-		this.wl("			currentYearText.string = new MFString (\"" + this.firstYear + "\");");
+		this.wl("			currentYearText.string = new MFString (\"current year:\", \"" + this.firstYear + "\");");
 		this.wl("		}"); //end initialize function
 		
 		/*
@@ -372,9 +495,9 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		 */
 		this.wl("		function " + CHANGE_YEAR_SCRIPT_NODE_TEXT_FIELD + "(value) {");
 		
-		this.wl("			print(value);");
+		this.wl("			var yearValue = \"current year: \" + value;");
 		
-		this.wl("			currentYearText.string = new MFString(value);");
+		this.wl("			currentYearText.string = new MFString(yearValue);");
 		
 		this.wl("		}"); // end change text function
 		
@@ -385,8 +508,8 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		/*
 		 * create an integer sequencer that will trigger the changeText event
 		 */
-		String uniqueTextChangerSequencerName = "TextChangeSequencer";
-		String textChangerSequencerValue = createTextChangerSequencerValue();
+		String uniqueTextChangerSequencerName = "CurrentYearChangeSequencer";
+		String textChangerSequencerValue = createCurrentYearChangerSequencerValue();
 		this.wl("<IntegerSequencer DEF=\"" + uniqueTextChangerSequencerName + "\" key=\"" + keyValueForInterpolators
 				+ "\" keyValue=\"" + textChangerSequencerValue + "\" />");
 		
@@ -400,7 +523,7 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 	 * 
 	 * But they are necessary for animating the text changer!
 	 */
-	private String createTextChangerSequencerValue() {
+	private String createCurrentYearChangerSequencerValue() {
 		StringBuffer buffer = new StringBuffer(110);
 		
 		int year = this.firstYear;
