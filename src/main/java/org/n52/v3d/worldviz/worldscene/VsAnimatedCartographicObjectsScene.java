@@ -196,11 +196,7 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 	}
 
 	private void resetPosition(T3dAttrSymbolInstance symbol, double yScaleValue) {
-		/*
-		 * take current Y position value and
-		 * 
-		 * nimm aktuellen positionswert und in ABhängigkeit des yScaleValues
-		 */
+
 		VgPoint position_sphere = symbol.getPosition();
 		VgPoint position_wgs84 = Wgs84ToSphereCoordsTransform.sphereToWgs84(position_sphere, getRadius());
 
@@ -297,7 +293,6 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 	}
 
 	private void writeGlobalTimeSensor() {
-		// <TimeSensor DEF='CLOCK' cycleInterval='4' loop='true'/>
 		this.wl("<TimeSensor DEF='" + TIME_SENSOR_NAME + "' cycleInterval='" + this.animationDuration
 				+ "' loop='true'/>");
 
@@ -345,10 +340,6 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		writeRoute(PROX_SENSOR_NAME, "position_changed", HUD_NAME, "translation");
 		writeRoute(PROX_SENSOR_NAME, "orientation_changed", HUD_NAME, "rotation");
 
-		/*
-		 * TODO Animation for text via script node???
-		 */
-
 	}
 	
 	private void writeYearTextScriptNode(String keyValueForInterpolators) {
@@ -363,7 +354,6 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		
 		this.wl("<Script DEF='" + CHANGE_YEAR_SCRIPT_NODE+ "' directOutput='true'>");
 		this.wl("	<field name='" + CHANGE_YEAR_SCRIPT_NODE_TEXT_FIELD+ "' accessType='inputOnly' type='SFInt32'/>");
-//		this.wl("	<field name='availableYearsArray' accessType='initializeOnly' type='MFString' value='' /")
 		this.wl("	<field name='currentYearText' accessType='initializeOnly' type='SFNode'>");
 		this.wl("		<Text USE='" + CURRENT_YEAR_TEXT_NODE + "' />");
 		this.wl("	</field>");
@@ -383,14 +373,6 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		this.wl("		function " + CHANGE_YEAR_SCRIPT_NODE_TEXT_FIELD + "(value) {");
 		
 		this.wl("			print(value);");
-
-//		this.wl("			currentValue = parseInt(currentYearText.string, 10);");
-//		this.wl("			nextValue = currentValue + " + this.interval + ";");
-//		this.wl();
-//		this.wl("			if (nextValue > " + this.lastYear + ")");
-//		this.wl("				nextValue = " + this.firstYear + ";");
-//		this.wl();
-//		this.wl("			currentYearText.string = new MFString(nextValue);");
 		
 		this.wl("			currentYearText.string = new MFString(value);");
 		
@@ -411,7 +393,6 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		this.writeRoute(TIME_SENSOR_NAME, "fraction_changed", uniqueTextChangerSequencerName, "set_fraction");
 		this.writeRoute(uniqueTextChangerSequencerName, "value_changed", CHANGE_YEAR_SCRIPT_NODE, CHANGE_YEAR_SCRIPT_NODE_TEXT_FIELD);
 		
-//		writeRoute(TIME_SENSOR_NAME, "fraction_changed", CHANGE_YEAR_SCRIPT_NODE, CHANGE_YEAR_SCRIPT_NODE_TEXT_FIELD);
 	}
 
 	/*
