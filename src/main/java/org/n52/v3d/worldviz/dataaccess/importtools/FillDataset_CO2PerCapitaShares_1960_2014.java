@@ -38,11 +38,11 @@ import org.n52.v3d.worldviz.helper.RelativePaths;
  * @author Christian Danowski
  * 
  */
-public class FillDataset_CO2Shares_1960_2015 {
+public class FillDataset_CO2PerCapitaShares_1960_2014 {
 
 	public static void main(String[] args) {
-		String xmlFileLocation = RelativePaths.CARBON_EMISSIONS_SHARES_1960_2014_XML;
-		String csvFileLocation = RelativePaths.CARBON_EMISSIONS_SHARES_1960_2014_CSV;
+		String xmlFileLocation = RelativePaths.CARBON_EMISSIONS_PER_CAPITA_SHARES_1960_2014_XML;
+		String csvFileLocation = RelativePaths.CARBON_EMISSIONS_PER_CAPITA_SHARES_1960_2014_CSV;
 		Character csvSeperator = ';';
 		String[] csvHeaders = new String[] { "ISO 3611-2", "1960", "1961", "1962", "1963", "1964", "1965", "1966",
 				"1967", "1968", "1969", "1970", "1971", "1972", "1973", "1974", "1975", "1976", "1977", "1978", "1979",
@@ -51,7 +51,7 @@ public class FillDataset_CO2Shares_1960_2015 {
 				"2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014" };
 		String nullValue = "";
 		String zeroValue = "NODATA";
-		int numberOfInitLinesToSkip = 1;
+		int numberOfInitLinesToSkip = 0;
 
 		CsvImporter fillCO2Emissions = new CsvImporter(xmlFileLocation, csvFileLocation, csvSeperator, csvHeaders,
 				nullValue, zeroValue, numberOfInitLinesToSkip);

@@ -72,6 +72,16 @@ public final class RelativePaths {
 	public static final String CARBON_EMISSIONS_SHARES_1960_2014_CSV = DATA_SOURCE_FILES_FOLDER
 			+ "CO2_Emissions_1960-2014.csv";
 	
+	public static final String CARBON_EMISSIONS_PER_CAPITA_1960_2014_XML = EARTH_SUB_FOLDER + "CarbonEmissionsPerCapita1960-2014.xml";
+	public static final String CARBON_EMISSIONS_PER_CAPITA_1960_2014_META_XML = EARTH_SUB_FOLDER + "CarbonEmissionsPerCapita1960-2014_meta.xml";
+	public static final String CARBON_EMISSIONS_PER_CAPITA_1960_2014_CSV = DATA_SOURCE_FILES_FOLDER
+			+ "CO2_Emissions_perCapita_1960-2014.csv";
+	
+	public static final String CARBON_EMISSIONS_PER_CAPITA_SHARES_1960_2014_XML = EARTH_SUB_FOLDER + "CarbonEmissionsPerCapitaShares1960-2014.xml";
+	public static final String CARBON_EMISSIONS_PER_CAPITA_SHARES_1960_2014_META_XML = EARTH_SUB_FOLDER + "CarbonEmissionsPerCapitaShares1960-2014_meta.xml";
+	public static final String CARBON_EMISSIONS_PER_CAPITA_SHARES_1960_2014_CSV = DATA_SOURCE_FILES_FOLDER
+			+ "CO2_Emissions_perCapita_1960-2014.csv";
+	
 	// CO2-emissions per capita
 	public static final String CARBON_EMISSIONS_PER_CAPITA_XML = EARTH_SUB_FOLDER + "CarbonEmissionsPerCapita.xml";
 	public static final String CARBON_EMISSIONS_PER_CAPITA_META_XML = EARTH_SUB_FOLDER
