@@ -325,7 +325,7 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		this.wl("<ProximitySensor DEF='" + PROX_SENSOR_NAME + "' center='0 0 0' size='1000 1000 1000'/>");
 
 		this.wl("<Transform DEF='" + HUD_NAME + "' translation='0 0 0'>");
-		this.wl("	<Transform DEF='HUDpos' translation='-2.7 1.7 -5.0'>");
+		this.wl("	<Transform DEF='HUDpos' translation='-2.4 1.7 -5.0'>");
 
 		this.wl("	<Shape>");
 		this.wl("		<Text string='\"" + this.sceneTitle + "\" \"" + this.firstYear + "-" + this.lastYear + "\"'>");
@@ -341,7 +341,7 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		/*
 		 * changing textNode showing the current year
 		 */
-		this.wl("	<Transform translation='-2.7 1.3 -5.0'>");
+		this.wl("	<Transform translation='-2.4 1.3 -5.0'>");
 
 		this.wl("	<Shape>");
 		this.wl("		<Text DEF='" + CURRENT_YEAR_TEXT_NODE + "' string='" + this.firstYear + "'>");
@@ -363,7 +363,7 @@ public class VsAnimatedCartographicObjectsScene extends VsCartographicSymbolsOnA
 		 * changing textNode showing additional text from array
 		 */
 		if (this.additionalTextPerYear != null && this.additionalTextPerYear.length > 0) {
-			this.wl("	<Transform translation='-2.7 0.9 -5.0'>");
+			this.wl("	<Transform translation='-2.4 0.9 -5.0'>");
 
 			this.wl("	<Shape>");
 			this.wl("		<Text DEF='" + ADDITIONAL_TEXT_PER_YEAR_TEXT_NODE + "' string='" + this.additionalTextPerYear[0] + "'>");
