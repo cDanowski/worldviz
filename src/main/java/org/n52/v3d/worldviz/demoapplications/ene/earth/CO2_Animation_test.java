@@ -34,7 +34,7 @@ public class CO2_Animation_test {
 	private static final CountryBordersLODEnum SIMPLIFIED110M = CountryBordersLODEnum.SIMPLIFIED_110m;
 	private static final String outputFile = "test/animation/AnimatedSymbols_CO2ppm.x3d";
 	private static int firstYear = 1960;
-	private static int lastYear = 2014;
+	private static int lastYear = 2100;
 	private static int interval = 1;
 
 	private static String latAttr = "Latitude";
@@ -54,7 +54,7 @@ public class CO2_Animation_test {
 		 * pairs of (year, ppm-value)
 		 */
 		List<KeyValuePair> co2_ppm_world_pairs = loader
-				.extractKeyValuePairs(new File("data/CO2_ppm_world_1960_2014.dat"), 1);
+				.extractKeyValuePairs(new File("data/CO2_ppm_world_1960_2100.dat"), 1);
 
 		/*
 		 * TODO load a dataset with CO2 emissions of all countries
@@ -176,8 +176,6 @@ public class CO2_Animation_test {
 
 	private VsAnimatedCartographicObjectsScene createAnimatedScene(List<VgAttrFeature> co2_ppm_perCountry,
 			Map<String, VgAttrFeature> countryPointMap, List<KeyValuePair> co2_ppm_world_pairs) {
-		String latAttr = "Latitude";
-		String lonAttr = "Longitude";
 
 		/*
 		 * create cartographic objects with color and extrusion/scale attributes
@@ -408,7 +406,8 @@ public class CO2_Animation_test {
 		double quarterValue = locMax * 0.25;
 		double thirtyFiveValue = locMax * 0.35;
 
-		return new double[] { minValue, quarterValue, halfValue, thirtyFiveValue, maxValue };
+//		return new double[] { minValue, quarterValue, halfValue, thirtyFiveValue, maxValue };
+		return new double[] { 0, 50, 100, 300, maxValue };
 
 	}
 
