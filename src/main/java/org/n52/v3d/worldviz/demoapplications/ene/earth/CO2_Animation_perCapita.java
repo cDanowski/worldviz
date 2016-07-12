@@ -28,11 +28,14 @@ import org.n52.v3d.worldviz.worldscene.helper.CountryBordersLODEnum;
 import org.n52.v3d.worldviz.worldscene.helper.FindExtrudeAndColorMissingCountriesHelper;
 import org.n52.v3d.worldviz.worldscene.helper.FindExtrudeAndColorMissingCountriesHelper_forAnimation;
 
-public class CO2_Animation_test {
+public class CO2_Animation_perCapita {
 
+	private static final String SCENE_TITLE = "CO2 PPM shares per Capita";
+	private static final String CARBON_EMISSIONS_DATASET = RelativePaths.CARBON_EMISSIONS_PER_CAPITA_SHARES_1960_2014_XML;
+	private static final File CO2_PPM_DAT_FILE = new File("data/CO2_ppm_world_1960_2100.dat");
 	private static final String COUNTRY_CODE = "Country code";
 	private static final CountryBordersLODEnum SIMPLIFIED110M = CountryBordersLODEnum.SIMPLIFIED_110m;
-	private static final String outputFile = "test/animation/AnimatedSymbols_CO2ppm.x3d";
+	private static final String outputFile = "test/animation/perCapita/AnimatedSymbols_CO2ppmPerCapita.x3d";
 	private static int firstYear = 1960;
 	private static int lastYear = 2100;
 	private static int interval = 1;
@@ -43,7 +46,47 @@ public class CO2_Animation_test {
 	private MpValue2ColoredAttrFeature_forAnimation colorMapper_forAnimation;
 	private MpValue2ExtrudedAttrFeature_forAnimation extrusionMapper_forAnimation;
 
-	public CO2_Animation_test() {
+	public CO2_Animation_perCapita() {
+
+	}
+	
+	private double[] setValuesForAttribute(List<VgAttrFeature> features) {
+		double locMin = -1;
+		double locMax = -1;
+
+		for (VgAttrFeature vgAttrFeature : features) {
+
+			for (int i = firstYear; i <= lastYear; i = i + interval) {
+
+				String attributeValue_string = (String) vgAttrFeature.getAttributeValue(String.valueOf(i));
+
+				double value = Double.valueOf(attributeValue_string);
+
+				if (locMin == -1 && locMax == -1) {
+					// erster Schritt
+					locMin = value;
+					locMax = value;
+				} else {
+					// jeder weitere Schritt
+					if (value < locMin)
+						locMin = value;
+					else if (value > locMax)
+						locMax = value;
+				}
+			}
+
+		}
+
+		double maxValue = locMax;
+		double minValue = locMin;
+
+		double halfValue = locMax * 0.5;
+		
+		double quarterValue = locMax * 0.25;
+		double thirtyFiveValue = locMax * 0.35;
+
+//		return new double[] { minValue, quarterValue, halfValue, thirtyFiveValue, maxValue };
+		return new double[] { 0, 10, 20, 30, maxValue };
 
 	}
 
@@ -54,7 +97,7 @@ public class CO2_Animation_test {
 		 * pairs of (year, ppm-value)
 		 */
 		List<KeyValuePair> co2_ppm_world_pairs = loader
-				.extractKeyValuePairs(new File("data/CO2_ppm_world_1960_2100.dat"), 1);
+				.extractKeyValuePairs(CO2_PPM_DAT_FILE, 1);
 
 		/*
 		 * TODO load a dataset with CO2 emissions of all countries
@@ -68,7 +111,7 @@ public class CO2_Animation_test {
 		 * --> auf deren Basis dann eine Szene/Animation bauen --> für jedes
 		 * Jahr jedes Land animieren!
 		 */
-		DatasetLoader xmlDatasetLoader = new DatasetLoader(RelativePaths.CARBON_EMISSIONS_SHARES_1960_2014_XML);
+		DatasetLoader xmlDatasetLoader = new DatasetLoader(CARBON_EMISSIONS_DATASET);
 		xmlDatasetLoader.setCountryBordersLOD(SIMPLIFIED110M);
 
 		XmlDataset carbonEmissionsShares_1960_2014 = xmlDatasetLoader.loadDataset();
@@ -155,9 +198,6 @@ public class CO2_Animation_test {
 
 		VsAnimatedCartographicObjectsScene animatedScene = createAnimatedScene(co2_ppm_perCountry, countryPointMap, co2_ppm_world_pairs);
 
-		animatedScene.setOutputFile(
-				new File("C:\\Users\\Christian\\Documents\\git\\worldviz\\test\\animation\\CO2_Animation.x3d"));
-
 		animatedScene.generateScene();
 
 		System.out.println("Finished");
@@ -208,7 +248,7 @@ public class CO2_Animation_test {
 
 		scene.setRadius(30);
 		
-		scene.setSceneTitle("CO2 PPM shares");
+		scene.setSceneTitle(SCENE_TITLE);
 		scene.setAdditionalTextPerYear(createAdditionalTextValues(co2_ppm_world_pairs));
 
 		return scene;
@@ -371,49 +411,11 @@ public class CO2_Animation_test {
 
 	}
 	
-	private double[] setValuesForAttribute(List<VgAttrFeature> features) {
-		double locMin = -1;
-		double locMax = -1;
-
-		for (VgAttrFeature vgAttrFeature : features) {
-
-			for (int i = firstYear; i <= lastYear; i = i + interval) {
-
-				String attributeValue_string = (String) vgAttrFeature.getAttributeValue(String.valueOf(i));
-
-				double value = Double.valueOf(attributeValue_string);
-
-				if (locMin == -1 && locMax == -1) {
-					// erster Schritt
-					locMin = value;
-					locMax = value;
-				} else {
-					// jeder weitere Schritt
-					if (value < locMin)
-						locMin = value;
-					else if (value > locMax)
-						locMax = value;
-				}
-			}
-
-		}
-
-		double maxValue = locMax;
-		double minValue = locMin;
-
-		double halfValue = locMax * 0.5;
-		
-		double quarterValue = locMax * 0.25;
-		double thirtyFiveValue = locMax * 0.35;
-
-//		return new double[] { minValue, quarterValue, halfValue, thirtyFiveValue, maxValue };
-		return new double[] { 0, 50, 100, 300, maxValue };
-
-	}
+	
 
 	public static void main(String args[]) {
 
-		CO2_Animation_test app = new CO2_Animation_test();
+		CO2_Animation_perCapita app = new CO2_Animation_perCapita();
 
 		app.run();
 
