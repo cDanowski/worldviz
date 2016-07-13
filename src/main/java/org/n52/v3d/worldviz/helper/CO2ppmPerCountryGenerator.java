@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.geotools.referencing.factory.epsg.CoordinateOperationFactoryUsingWKT;
 import org.n52.v3d.triturus.vgis.VgAttrFeature;
 import org.n52.v3d.worldviz.dataaccess.importtools.KeyValuePair;
 
@@ -18,7 +17,6 @@ import org.n52.v3d.worldviz.dataaccess.importtools.KeyValuePair;
  */
 public class CO2ppmPerCountryGenerator {
 
-	private static final int NUMBER_OF_LAST_YEARS_FOR_COUNTRY_SHARE_COMPUTATION = 3;
 
 	/**
 	 * Generates a map of features, representing the share of ppmConcentration
@@ -29,7 +27,7 @@ public class CO2ppmPerCountryGenerator {
 	 * @return
 	 */
 	public static List<VgAttrFeature> generatePpmPerCountry(List<KeyValuePair> co2_ppm_world_pairs,
-			List<VgAttrFeature> countries_shares) {
+			List<VgAttrFeature> countries_shares, int numberOfLastYears_forCountryShareSimulation) {
 		List<VgAttrFeature> ppmSharesPerCountry = new ArrayList<VgAttrFeature>(countries_shares.size());
 
 		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.GERMAN);
@@ -85,7 +83,7 @@ public class CO2ppmPerCountryGenerator {
 						 * present
 						 */
 						country = CountryShareHelper.computeNewShareBasedOnLastXyears(country, year,
-								NUMBER_OF_LAST_YEARS_FOR_COUNTRY_SHARE_COMPUTATION);
+								numberOfLastYears_forCountryShareSimulation);
 
 					}
 

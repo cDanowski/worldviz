@@ -23,13 +23,13 @@ import org.n52.v3d.worldviz.helper.CO2ppmPerCountryGenerator;
 import org.n52.v3d.worldviz.helper.RelativePaths;
 import org.n52.v3d.worldviz.projections.AxisSwitchTransform;
 import org.n52.v3d.worldviz.worldscene.VsAnimatedCartographicObjectsScene;
-import org.n52.v3d.worldviz.worldscene.VsCartographicSymbolsOnASphereScene;
 import org.n52.v3d.worldviz.worldscene.helper.CountryBordersLODEnum;
 import org.n52.v3d.worldviz.worldscene.helper.FindExtrudeAndColorMissingCountriesHelper;
 import org.n52.v3d.worldviz.worldscene.helper.FindExtrudeAndColorMissingCountriesHelper_forAnimation;
 
 public class CO2_Animation_perCapita {
 
+	private static final int NUMBER_OF_LAST_YEARS_FOR_COUNTRY_SHARE_SIMULATION = 3;
 	private static final String SCENE_TITLE = "CO2 PPM shares per Capita";
 	private static final String CARBON_EMISSIONS_DATASET = RelativePaths.CARBON_EMISSIONS_PER_CAPITA_SHARES_1960_2014_XML;
 	private static final File CO2_PPM_DAT_FILE = new File("data/CO2_ppm_world_1960_2100.dat");
@@ -147,7 +147,7 @@ public class CO2_Animation_perCapita {
 		 */
 
 		List<VgAttrFeature> co2_ppm_perCountry = CO2ppmPerCountryGenerator.generatePpmPerCountry(co2_ppm_world_pairs,
-				countries_shares);
+				countries_shares, NUMBER_OF_LAST_YEARS_FOR_COUNTRY_SHARE_SIMULATION);
 
 		/*
 		 * TODO create a new scene to which the co2_ppm_perCountry and
